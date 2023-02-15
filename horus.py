@@ -10,7 +10,7 @@ import logging
 ON_POSIX = 'posix' in sys.builtin_module_names
 
 logger = logging.getLogger('__horus__')
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 
 class Horus:
@@ -22,12 +22,13 @@ class Horus:
     start_time = time.time()
     poison_pilled = False
 
-    def __init__(self, cmd, quiet_timeout_seconds, timeout_seconds=None, poison_pills=[], log_blacklist=[]):
+    def __init__(self, cmd, quiet_timeout_seconds, timeout_seconds=None, poison_pills=[], log_blacklist=[], start_delay=0):
         self.cmd = cmd
         self.quiet_timeout_seconds = quiet_timeout_seconds
         self.timeout_seconds = timeout_seconds
         self.poison_pills = poison_pills
         self.log_blacklist = log_blacklist
+        self.start_delay = start_delay
         self.start()
 
     def print_if_not_blacklisted(self, line):
@@ -59,6 +60,9 @@ class Horus:
 
     def start(self):
         logger.info("Starting command {}".format(self.cmd))
+        if self.start_delay > 0:
+            logger.info("Delaying start by {}.".format(self.start_delay))
+            time.sleep(self.start_delay)
         logger.info("Quiet Timeout {}".format(self.quiet_timeout_seconds))
         self.proc = Popen(self.cmd, shell=False, stdout=PIPE, stderr=PIPE, bufsize=0, close_fds=ON_POSIX)
         t_so = Thread(target=self.enqueue_output, args=(self.proc.stdout,))
@@ -105,7 +109,7 @@ def main():
     # cmd = './ghost-app -c config/ghost-config-camera-steve.txt'
     cmd = 'ping -i 1 127.0.01'
     # cmd = 'ls'
-    horus = Horus(shlex.split(cmd), 5, 10, log_blacklist=[], poison_pills=['bytes', 'lol'])
+    horus = Horus(shlex.split(cmd), 5, 10, log_blacklist=[], poison_pills=['lol'], start_delay=2)
 
     while True:
         retcode = horus.poll()
