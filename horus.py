@@ -106,7 +106,7 @@ def main():
     # cmd = './ghost-app -c config/ghost-config-camera-steve.txt'
     cmd = 'ping -i 1 127.0.01'
     # cmd = 'ls'
-    horus = Horus(shlex.split(cmd), 5, 10, log_blacklist=[], poison_pills=['bytes'])
+    horus = Horus(shlex.split(cmd), 5, 10, log_blacklist=[], poison_pills=[])
 
     while True:
         retcode = horus.poll()
