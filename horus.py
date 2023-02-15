@@ -24,8 +24,8 @@ class Horus:
 
     def __init__(self, cmd, quiet_timeout_seconds, timeout_seconds=None, poison_pills=[], log_blacklist=[], start_delay=0):
         self.cmd = cmd
-        self.quiet_timeout_seconds = quiet_timeout_seconds
-        self.timeout_seconds = timeout_seconds
+        self.quiet_timeout_seconds = int(quiet_timeout_seconds)
+        self.timeout_seconds = int(timeout_seconds)
         self.poison_pills = poison_pills
         self.log_blacklist = log_blacklist
         self.start_delay = start_delay
@@ -64,6 +64,8 @@ class Horus:
             logger.info("Delaying start by {}.".format(self.start_delay))
             time.sleep(self.start_delay)
         logger.info("Quiet Timeout {}".format(self.quiet_timeout_seconds))
+        logger.info("Poison Pills {}".format(self.poison_pills))
+        logger.info("Timeout {}".format(self.timeout_seconds))
         self.proc = Popen(self.cmd, shell=False, stdout=PIPE, stderr=PIPE, bufsize=0, close_fds=ON_POSIX)
         t_so = Thread(target=self.enqueue_output, args=(self.proc.stdout,))
         t_se = Thread(target=self.enqueue_output, args=(self.proc.stderr,))
