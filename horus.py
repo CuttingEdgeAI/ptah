@@ -15,20 +15,30 @@ logger.setLevel(logging.DEBUG)
 
 class Horus:
     last_std_msg_time = time.time()
+    last_good_pill_time = time.time()
     cmd = ''
     quiet_timeout_seconds = 0
+    good_pill_timeout_seconds = -1
     timeout_seconds = None
     proc = None
     start_time = time.time()
     poison_pilled = False
 
-    def __init__(self, cmd, quiet_timeout_seconds, timeout_seconds=None, poison_pills=[], log_blacklist=[], start_delay=0):
+    def __init__(self, cmd, quiet_timeout_seconds, timeout_seconds=None, poison_pills=[], log_blacklist=[], 
+        start_delay=0, good_pills=[], good_pill_timeout_seconds = -1):
         self.cmd = cmd
         self.quiet_timeout_seconds = int(quiet_timeout_seconds)
+        self.good_pill_timeout_seconds = int(good_pill_timeout_seconds)
         self.timeout_seconds = int(timeout_seconds)
         self.poison_pills = poison_pills
+        self.good_pills = good_pills
         self.log_blacklist = log_blacklist
         self.start_delay = start_delay
+
+        if len(good_pills) > 0 and self.good_pill_timeout_seconds <= 0:
+            logger.error("If good pill list is defined, good_pill_timeout_seconds must be > 0")
+            sys.exit(1)
+
         self.start()
 
     def print_if_not_blacklisted(self, line):
@@ -40,8 +50,19 @@ class Horus:
                 if black_line in line:
                     blacklisted = True
             if blacklisted is False:
-                print(line)       
+                print(line)  
 
+    # Return True if line is a good pill
+    def is_good_pill(self, line):
+        # If no good pills defined, everything is good
+        if len(self.good_pills) == 0:
+            return True
+        else:
+            for good_pill in self.good_pills:
+                if good_pill in line:
+                    return True
+            return False
+                
 
     def enqueue_output(self, out):
         logger.info("Output thread ready for {}".format(out))
@@ -54,6 +75,8 @@ class Horus:
                     logger.warning("Poison pill detected.")
                     self.poison_pilled = True
             self.last_std_msg_time = time.time()
+            if self.is_good_pill(decoded_line):
+                self.last_good_pill_time = time.time()
         logger.debug("Closing thread {}".format(out))
         out.close()
 
@@ -77,6 +100,7 @@ class Horus:
 
     def poll(self):
         quiet_diff = time.time() - self.last_std_msg_time
+        good_pill_diff = time.time() - self.last_good_pill_time
         logger.debug("Time since last message {}".format(quiet_diff))
         runtime_diff = time.time() - self.start_time
         logger.debug("Time since startup {}".format(runtime_diff))
@@ -100,6 +124,11 @@ class Horus:
             self.proc.terminate()
             self.proc.kill()
             return self.proc.poll()
+        if self.good_pill_timeout_seconds and self.good_pill_timeout_seconds > 0 and (good_pill_diff > self.good_pill_timeout_seconds):
+            logger.warning("No good pill log message in {} seconds, terminating command {}".format(good_pill_diff, self.cmd))
+            self.proc.terminate()
+            self.proc.kill()
+            return self.proc.poll()
         return self.proc.poll()
 
     def terminate(self):
@@ -111,7 +140,7 @@ def main():
     # cmd = './ghost-app -c config/ghost-config-camera-steve.txt'
     cmd = 'ping -i 1 127.0.01'
     # cmd = 'ls'
-    horus = Horus(shlex.split(cmd), None, None, log_blacklist=[], poison_pills=['lol'], start_delay=2)
+    horus = Horus(shlex.split(cmd), quiet_timeout_seconds=5, timeout_seconds=-1, log_blacklist=[], poison_pills=['lol'], start_delay=2, good_pills=['bytes'], good_pill_timeout_seconds=5)
 
     while True:
         retcode = horus.poll()
