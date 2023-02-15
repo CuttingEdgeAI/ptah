@@ -88,12 +88,12 @@ class Horus:
             logger.debug("cmd {} is dead, shutting down, return code: {}".format(self.cmd, p_retcode))
             self.proc.terminate()
             return p_retcode
-        if self.quiet_timeout_seconds > 0 and quiet_diff > self.quiet_timeout_seconds:
+        if self.quiet_timeout_seconds and self.quiet_timeout_seconds > 0 and quiet_diff > self.quiet_timeout_seconds:
             logger.warning("No log message in {} seconds, terminating command {}".format(quiet_diff, self.cmd))
             self.proc.terminate()
             self.proc.kill()
             return self.proc.poll()
-        if self.timeout_seconds and (runtime_diff > self.timeout_seconds):
+        if self.timeout_seconds and self.timeout_seconds > 0 and (runtime_diff > self.timeout_seconds):
             logger.warning("Command took longer than horus timeout, terminating command {}".format(runtime_diff, self.cmd))
             self.proc.terminate()
             self.proc.kill()
@@ -109,7 +109,7 @@ def main():
     # cmd = './ghost-app -c config/ghost-config-camera-steve.txt'
     cmd = 'ping -i 1 127.0.01'
     # cmd = 'ls'
-    horus = Horus(shlex.split(cmd), 5, 10, log_blacklist=[], poison_pills=['lol'], start_delay=2)
+    horus = Horus(shlex.split(cmd), None, None, log_blacklist=[], poison_pills=['lol'], start_delay=2)
 
     while True:
         retcode = horus.poll()
