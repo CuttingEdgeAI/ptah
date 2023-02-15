@@ -77,7 +77,7 @@ class Horus:
         logger.debug("Time since startup {}".format(runtime_diff))
         p_retcode = self.proc.poll()
         if self.poison_pilled:
-            logger.warn("Observed poisoned state, shutting down.")
+            logger.warning("Observed poisoned state, shutting down.")
             self.proc.terminate()
             self.proc.kill()
             return self.proc.poll()
@@ -106,7 +106,7 @@ def main():
     # cmd = './ghost-app -c config/ghost-config-camera-steve.txt'
     cmd = 'ping -i 1 127.0.01'
     # cmd = 'ls'
-    horus = Horus(shlex.split(cmd), 5, 10, log_blacklist=[])
+    horus = Horus(shlex.split(cmd), 5, 10, log_blacklist=[], poison_pills=['bytes'])
 
     while True:
         retcode = horus.poll()
