@@ -17,5 +17,5 @@ setuptools.setup(
     },
     license='Private',
     packages=['horus'],
-    install_requires=[],
+    install_requires=['wheel'],
 )

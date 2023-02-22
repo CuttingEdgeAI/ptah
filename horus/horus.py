@@ -9,8 +9,7 @@ import logging
 
 ON_POSIX = 'posix' in sys.builtin_module_names
 
-logger = logging.getLogger('__horus__')
-logger.setLevel(logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 
 class Horus:
@@ -82,13 +81,17 @@ class Horus:
 
 
     def start(self):
+        logger.info("Quiet Timeout {}".format(self.quiet_timeout_seconds))
+        logger.info("Poison Pills {}".format(self.poison_pills))
+        logger.info("Good Pills {}".format(self.good_pills))
+        logger.info("Good Pills Timeout (s) {}".format(self.good_pill_timeout_seconds))
+        logger.info("Timeout {}".format(self.timeout_seconds))
+        logger.info("Log Blacklist {}".format(self.log_blacklist))
+        logger.info("Start Delay {}".format(self.start_delay))
         logger.info("Starting command {}".format(self.cmd))
         if self.start_delay > 0:
             logger.info("Delaying start by {}.".format(self.start_delay))
             time.sleep(self.start_delay)
-        logger.info("Quiet Timeout {}".format(self.quiet_timeout_seconds))
-        logger.info("Poison Pills {}".format(self.poison_pills))
-        logger.info("Timeout {}".format(self.timeout_seconds))
         self.proc = Popen(self.cmd, shell=False, stdout=PIPE, stderr=PIPE, bufsize=0, close_fds=ON_POSIX)
         t_so = Thread(target=self.enqueue_output, args=(self.proc.stdout,))
         t_se = Thread(target=self.enqueue_output, args=(self.proc.stderr,))
@@ -136,11 +139,11 @@ class Horus:
                             
 
 def main():
+    logging.basicConfig()
     print("Running test with ping...")
-    # cmd = './ghost-app -c config/ghost-config-camera-steve.txt'
     cmd = 'ping -i 1 127.0.01'
-    # cmd = 'ls'
-    horus = Horus(shlex.split(cmd), quiet_timeout_seconds=5, timeout_seconds=-1, log_blacklist=[], poison_pills=['lol'], start_delay=2, good_pills=['bytes'], good_pill_timeout_seconds=5)
+    horus = Horus(shlex.split(cmd), quiet_timeout_seconds=5, timeout_seconds=5, log_blacklist=[], 
+                  poison_pills=['lol'], start_delay=2, good_pills=['bytes'], good_pill_timeout_seconds=5)
 
     while True:
         retcode = horus.poll()
