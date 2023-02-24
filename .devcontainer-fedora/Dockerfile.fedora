@@ -17,7 +17,7 @@ RUN SNIPPET="export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhisto
     && chown -R $USERNAME /commandhistory \
     && echo "$SNIPPET" >> "/home/$USERNAME/.bashrc"
 
-RUN dnf install -y python3-pip iputils
+RUN dnf install -y python3-pip iputils vim
 
 RUN pip3 install dateparser pytz yt-dlp
 

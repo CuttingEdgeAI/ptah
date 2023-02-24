@@ -20,18 +20,21 @@ class PacketEyeFedora:
 
     # Checks if there are incoming packets, if under threshold, return False, otherwise, True.
     def check_traffic(self):
-        logger.info("Checking traffic")
         ifstat_result = subprocess.run(['ifstat',  '-t', str(INTERVAL), 'eth0'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         # logger.debug(ifstat_result)
         rx_packets = 0
         tx_packets = 0
+        eth0_line = ifstat_result.stdout.decode('utf-8').split('\n')[3].strip()
+        logger.debug(eth0_line)
         try:
-            rx_packets = int(ifstat_result.stdout.decode('utf-8').split('\n')[3].strip().split()[1])
-            tx_packets = int(ifstat_result.stdout.decode('utf-8').split('\n')[3].strip().split()[3])
+            rx_packets = int(eth0_line.split()[1])
+            tx_packets = int(eth0_line.split()[3])
+            rx_bw = int(eth0_line.split()[5])
+            tx_bw = int(eth0_line.split()[7])
         except IndexError as e:
             logger.debug("Unable to detect rx packets, assuming 0")
             rx_packets = 0
-        logger.debug("RX Packets {}, TX Packets {}".format(rx_packets, tx_packets))
+        logger.debug("RX Packets {}, TX Packets {}, RX BW {}, TX BW".format(rx_packets, tx_packets, rx_bw, tx_bw))
         if rx_packets < self.min_rx_packets:
             self.dead_rx_packets_counter += 1
             logger.debug("Incrementing low rx dead counter. {}/{}".format(self.dead_rx_packets_counter, self.max_rx_checks))
