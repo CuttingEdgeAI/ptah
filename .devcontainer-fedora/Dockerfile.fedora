@@ -1,0 +1,26 @@
+# See here for image contents: https://github.com/microsoft/vscode-dev-containers/tree/v0.183.0/containers/cpp/.devcontainer/base.Dockerfile
+
+# [Choice] Debian / Ubuntu version: debian-10, debian-9, ubuntu-20.04, ubuntu-18.04
+FROM fedora:37
+
+ARG USERNAME=vscode
+
+COPY .devcontainer-fedora/library-scripts/common-redhat.sh /tmp/library-scripts/
+RUN bash /tmp/library-scripts/common-redhat.sh
+
+COPY .devcontainer-fedora/library-scripts/docker-redhat.sh /tmp/library-scripts/
+RUN bash /tmp/library-scripts/docker-redhat.sh
+
+RUN SNIPPET="export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \
+    && mkdir /commandhistory \
+    && touch /commandhistory/.bash_history \
+    && chown -R $USERNAME /commandhistory \
+    && echo "$SNIPPET" >> "/home/$USERNAME/.bashrc"
+
+RUN dnf install -y python3-pip iputils
+
+RUN pip3 install dateparser pytz yt-dlp
+
+WORKDIR /workspaces/horus
+
+CMD ["sleep", "infinity"]

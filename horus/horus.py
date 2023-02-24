@@ -13,19 +13,15 @@ logger = logging.getLogger(__name__)
 
 
 class Horus:
-    last_std_msg_time = time.time()
-    last_good_pill_time = time.time()
-    cmd = ''
-    quiet_timeout_seconds = 0
-    good_pill_timeout_seconds = -1
-    timeout_seconds = None
-    proc = None
-    start_time = time.time()
-    poison_pilled = False
+
+    
 
     def __init__(self, cmd, quiet_timeout_seconds, timeout_seconds=None, poison_pills=[], log_blacklist=[], 
         start_delay=0, good_pills=[], good_pill_timeout_seconds = -1):
         self.cmd = cmd
+        self.last_std_msg_time = time.time()
+        self.last_good_pill_time = time.time()
+        self.start_time = time.time()
         self.quiet_timeout_seconds = int(quiet_timeout_seconds)
         self.good_pill_timeout_seconds = int(good_pill_timeout_seconds)
         self.timeout_seconds = int(timeout_seconds)
@@ -33,6 +29,8 @@ class Horus:
         self.good_pills = good_pills
         self.log_blacklist = log_blacklist
         self.start_delay = start_delay
+        self.poison_pilled = False
+        self.blacklist_counter = 0
 
         if len(good_pills) > 0 and self.good_pill_timeout_seconds <= 0:
             logger.error("If good pill list is defined, good_pill_timeout_seconds must be > 0")
@@ -50,6 +48,8 @@ class Horus:
                     blacklisted = True
             if blacklisted is False:
                 print(line)  
+            else:
+                self.blacklist_counter += 1
 
     # Return True if line is a good pill
     def is_good_pill(self, line):
@@ -108,6 +108,8 @@ class Horus:
         runtime_diff = time.time() - self.start_time
         logger.debug("Time since startup {}".format(runtime_diff))
         p_retcode = self.proc.poll()
+        logger.debug("{} blacklisted log messages observed since last poll.".format(self.blacklist_counter))
+        self.blacklist_counter = 0
         if self.poison_pilled:
             logger.warning("Observed poisoned state, shutting down.")
             self.proc.terminate()
@@ -123,7 +125,7 @@ class Horus:
             self.proc.kill()
             return self.proc.poll()
         if self.timeout_seconds and self.timeout_seconds > 0 and (runtime_diff > self.timeout_seconds):
-            logger.warning("Command took longer than horus timeout, terminating command {}".format(runtime_diff, self.cmd))
+            logger.warning("Command took longer than horus timeout {}, terminating command {}".format(self.timeout_seconds, self.cmd))
             self.proc.terminate()
             self.proc.kill()
             return self.proc.poll()
@@ -139,11 +141,11 @@ class Horus:
                             
 
 def main():
-    logging.basicConfig()
+    logging.basicConfig(level=logging.DEBUG)
     print("Running test with ping...")
     cmd = 'ping -i 1 127.0.01'
-    horus = Horus(shlex.split(cmd), quiet_timeout_seconds=5, timeout_seconds=5, log_blacklist=[], 
-                  poison_pills=['lol'], start_delay=2, good_pills=['bytes'], good_pill_timeout_seconds=5)
+    horus = Horus(shlex.split(cmd), quiet_timeout_seconds=5, timeout_seconds=15, log_blacklist=['bytes'], 
+                  poison_pills=['lol'], start_delay=2, good_pills=[], good_pill_timeout_seconds=5)
 
     while True:
         retcode = horus.poll()

@@ -1,0 +1,31 @@
+{
+	"name": "Horus-Debian",
+
+	// Update the 'dockerComposeFile' list if you have more compose files or use different names.
+	"dockerComposeFile": "../docker-compose.yml",
+
+	// The 'service' property is the name of the service for the container that VS Code should
+	// use. Update this value and .devcontainer/docker-compose.yml to the real service name.
+	"service": "horus-debian",
+
+	// The optional 'workspaceFolder' property is the path VS Code should open by default when
+	// connected. This is typically a volume mount in .devcontainer/docker-compose.yml
+	"workspaceFolder": "/workspaces/horus",
+
+	// Add the IDs of extensions you want installed when the container is created.
+	"customizations": {
+		"vscode": {
+			"extensions": ["ms-python.python"]
+		}
+	},
+
+	// Uncomment the next line if you want to keep your containers running after VS Code shuts down.
+	"shutdownAction": "stopCompose",
+
+	// Uncomment the next line to use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "ls -alh && mkdir -p aws-kvs-sdk-cpp/build && cd aws-kvs-sdk-cpp/build && cmake .. -DBUILD_GSTREAMER_PLUGIN=ON && make",
+	
+
+	// Comment out connect as root instead. To add a non-root user, see: https://aka.ms/vscode-remote/containers/non-root.
+	"remoteUser": "vscode"
+}
