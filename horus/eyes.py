@@ -29,12 +29,12 @@ class PacketEyeFedora:
         try:
             rx_packets = int(eth0_line.split()[1])
             tx_packets = int(eth0_line.split()[3])
-            rx_bw = int(eth0_line.split()[5])
-            tx_bw = int(eth0_line.split()[7])
+            rx_bw = eth0_line.split()[5]
+            tx_bw = eth0_line.split()[7]
         except IndexError as e:
             logger.debug("Unable to detect rx packets, assuming 0")
             rx_packets = 0
-        logger.debug("RX Packets {}, TX Packets {}, RX BW {}, TX BW".format(rx_packets, tx_packets, rx_bw, tx_bw))
+        logger.debug("RX Packets {}, TX Packets {}, RX BW {}, TX BW {}".format(rx_packets, tx_packets, rx_bw, tx_bw))
         if rx_packets < self.min_rx_packets:
             self.dead_rx_packets_counter += 1
             logger.debug("Incrementing low rx dead counter. {}/{}".format(self.dead_rx_packets_counter, self.max_rx_checks))
