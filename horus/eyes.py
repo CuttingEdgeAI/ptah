@@ -40,7 +40,7 @@ class PacketEyeFedora:
             logger.debug("Incrementing low rx dead counter. {}/{}".format(self.dead_rx_packets_counter, self.max_rx_checks))
         else:
             self.dead_rx_packets_counter = 0
-        if self.dead_rx_packets_counter > self.max_rx_checks:
+        if self.max_rx_checks > 0 and self.dead_rx_packets_counter > self.max_rx_checks:
             logger.warning("Dead packet checks exceeded.")
             return False
         return True
