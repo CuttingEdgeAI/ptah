@@ -5,7 +5,7 @@ with open("README", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name='horus',
-    version='0.0.2',
+    version='0.0.3',
     author='Anton Vattay',
     author_email='anton@cuttingedgeai.com',
     description='Process watcher.',
