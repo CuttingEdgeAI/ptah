@@ -104,9 +104,9 @@ class Horus:
     def poll(self):
         quiet_diff = time.time() - self.last_std_msg_time
         good_pill_diff = time.time() - self.last_good_pill_time
-        logger.debug("Time since last message {}".format(quiet_diff))
+        # logger.debug("Time since last message {}".format(quiet_diff))
         runtime_diff = time.time() - self.start_time
-        logger.debug("Time since startup {}".format(runtime_diff))
+        # logger.debug("Time since startup {}".format(runtime_diff))
         p_retcode = self.proc.poll()
         logger.debug("{} blacklisted log messages observed since last poll.".format(self.blacklist_counter))
         self.blacklist_counter = 0
