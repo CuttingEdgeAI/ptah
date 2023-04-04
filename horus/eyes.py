@@ -78,10 +78,10 @@ class PacketEyeFedora:
 def main():
     logging.basicConfig(level=logging.DEBUG)
     print("Running test with ifstat...")
-    horus = PacketEyeFedora(1,3,100)
+    ptah = PacketEyeFedora(1,3,100)
 
     while True:
-        good = horus.check_traffic()
+        good = ptah.check_traffic()
         if not good:
             break
         time.sleep(5)

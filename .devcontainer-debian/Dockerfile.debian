@@ -24,6 +24,6 @@ RUN apt-get update && bash /tmp/library-scripts/docker-debian.sh
 
 RUN pip3 install dateparser pytz yt-dlp
 
-WORKDIR /workspaces/horus
+WORKDIR /workspaces/ptah
 
 CMD ["sleep", "infinity"]

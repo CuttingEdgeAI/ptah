@@ -21,6 +21,6 @@ RUN dnf install -y python3-pip iputils vim
 
 RUN pip3 install dateparser pytz yt-dlp
 
-WORKDIR /workspaces/horus
+WORKDIR /workspaces/ptah
 
 CMD ["sleep", "infinity"]

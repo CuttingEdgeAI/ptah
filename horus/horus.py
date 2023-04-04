@@ -12,7 +12,7 @@ ON_POSIX = 'posix' in sys.builtin_module_names
 logger = logging.getLogger(__name__)
 
 
-class Horus:
+class Ptah:
 
     
 
@@ -125,7 +125,7 @@ class Horus:
             self.proc.kill()
             return self.proc.poll()
         if self.timeout_seconds and self.timeout_seconds > 0 and (runtime_diff > self.timeout_seconds):
-            logger.warning("Command took longer than horus timeout {}, terminating command {}".format(self.timeout_seconds, self.cmd))
+            logger.warning("Command took longer than ptah timeout {}, terminating command {}".format(self.timeout_seconds, self.cmd))
             self.proc.terminate()
             self.proc.kill()
             return self.proc.poll()
@@ -144,11 +144,11 @@ def main():
     logging.basicConfig(level=logging.DEBUG)
     print("Running test with ping...")
     cmd = 'ping -i 1 127.0.01'
-    horus = Horus(shlex.split(cmd), quiet_timeout_seconds=5, timeout_seconds=15, log_blacklist=['bytes'], 
+    ptah = Ptah(shlex.split(cmd), quiet_timeout_seconds=5, timeout_seconds=15, log_blacklist=['bytes'], 
                   poison_pills=['lol'], start_delay=2, good_pills=[], good_pill_timeout_seconds=5)
 
     while True:
-        retcode = horus.poll()
+        retcode = ptah.poll()
         if retcode is not None:
             break
         time.sleep(5)

@@ -1,17 +1,17 @@
 version: '3'
 
 services:
-    horus-debian:
+    ptah-debian:
         init: true
         build:
             context: .
             dockerfile: .devcontainer-debian/Dockerfile.debian
         volumes:
-            - .:/workspaces/horus:cached
+            - .:/workspaces/ptah:cached
             - /var/run/docker.sock:/var/run/docker-host.sock
             - ~/.ssh:/home/vscode/.ssh:cached
             - ~/.docker:/home/vscode/.docker:cached
-            - horus-bashhistory-debian:/commandhistory
+            - ptah-bashhistory-debian:/commandhistory
         user: vscode
         cap_add:
             - SYS_PTRACE
@@ -19,17 +19,17 @@ services:
             - seccomp:unconfined    
         # command: /bin/sh -c "while sleep 1000; do :; done"    
 
-    horus-fedora:
+    ptah-fedora:
         init: true
         build:
             context: .
             dockerfile: .devcontainer-fedora/Dockerfile.fedora
         volumes:
-            - .:/workspaces/horus:cached
+            - .:/workspaces/ptah:cached
             - /var/run/docker.sock:/var/run/docker-host.sock
             - ~/.ssh:/home/vscode/.ssh:cached
             - ~/.docker:/home/vscode/.docker:cached
-            - horus-bashhistory-fedora:/commandhistory
+            - ptah-bashhistory-fedora:/commandhistory
         user: vscode
         cap_add:
             - SYS_PTRACE
@@ -38,5 +38,5 @@ services:
         # command: /bin/sh -c "while sleep 1000; do :; done"    
 
 volumes:
-    horus-bashhistory-debian:
-    horus-bashhistory-fedora:
+    ptah-bashhistory-debian:
+    ptah-bashhistory-fedora:
