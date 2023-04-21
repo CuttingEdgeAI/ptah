@@ -28,7 +28,7 @@ class Ptah:
         self.poison_pills = poison_pills
         self.good_pills = good_pills
         self.log_blacklist = log_blacklist
-        self.start_delay = start_delay
+        self.start_delay = int(start_delay)
         self.poison_pilled = False
         self.blacklist_counter = 0
 
