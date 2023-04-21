@@ -5,7 +5,7 @@ with open("README", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name='ptah',
-    version='0.0.4',
+    version='0.0.4.1',
     author='Anton Vattay',
     author_email='anton@cuttingedgeai.com',
     description='Process watcher.',
