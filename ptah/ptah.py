@@ -144,7 +144,7 @@ class Ptah:
                             
 
 def main():
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG)
     print("Running test with ping...")
     cmd = 'ping -i 1 127.0.01'
     ptah = Ptah(shlex.split(cmd), quiet_timeout_seconds=5, timeout_seconds=15, log_blacklist=['bytes'], 
