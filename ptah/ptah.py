@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 
 class Ptah:
 
-    instances = []
 
     def __init__(self, cmd, quiet_timeout_seconds, timeout_seconds=None, poison_pills=[], log_blacklist=[],
                  start_delay=0, good_pills=[], good_pill_timeout_seconds=-1, custom_env_vars=None):
@@ -33,7 +32,6 @@ class Ptah:
         self.poison_pilled = False
         self.blacklist_counter = 0
         self.custom_env_vars = custom_env_vars if custom_env_vars is not None else os.environ.copy()
-        self.instances.append(self)
         if len(good_pills) > 0 and self.good_pill_timeout_seconds <= 0:
             logger.error("If good pill list is defined, good_pill_timeout_seconds must be > 0")
             sys.exit(1)
@@ -139,7 +137,6 @@ class Ptah:
         return self.proc.poll()
 
     def terminate(self):
-        self.instances.remove(self)
         self.proc.terminate()
                             
 
