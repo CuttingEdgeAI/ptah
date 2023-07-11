@@ -6,6 +6,7 @@ import time
 import sys
 from threading import Thread
 import logging
+import os
 
 ON_POSIX = 'posix' in sys.builtin_module_names
 
@@ -14,10 +15,9 @@ logger = logging.getLogger(__name__)
 
 class Ptah:
 
-    
 
-    def __init__(self, cmd, quiet_timeout_seconds, timeout_seconds=None, poison_pills=[], log_blacklist=[], 
-        start_delay=0, good_pills=[], good_pill_timeout_seconds = -1):
+    def __init__(self, cmd, quiet_timeout_seconds, timeout_seconds=None, poison_pills=[], log_blacklist=[],
+                 start_delay=0, good_pills=[], good_pill_timeout_seconds=-1, custom_env_vars=None):
         self.cmd = cmd
         self.last_std_msg_time = time.time()
         self.last_good_pill_time = time.time()
@@ -31,7 +31,7 @@ class Ptah:
         self.start_delay = int(start_delay)
         self.poison_pilled = False
         self.blacklist_counter = 0
-
+        self.custom_env_vars = custom_env_vars if custom_env_vars is not None else os.environ.copy()
         if len(good_pills) > 0 and self.good_pill_timeout_seconds <= 0:
             logger.error("If good pill list is defined, good_pill_timeout_seconds must be > 0")
             sys.exit(1)
@@ -92,7 +92,7 @@ class Ptah:
         if self.start_delay > 0:
             logger.info("Delaying start by {}.".format(self.start_delay))
             time.sleep(self.start_delay)
-        self.proc = Popen(self.cmd, shell=False, stdout=PIPE, stderr=PIPE, bufsize=0, close_fds=ON_POSIX)
+        self.proc = Popen(self.cmd, shell=False, stdout=PIPE, stderr=PIPE, bufsize=0, close_fds=ON_POSIX, env=self.custom_env_vars)
         t_so = Thread(target=self.enqueue_output, args=(self.proc.stdout,))
         t_se = Thread(target=self.enqueue_output, args=(self.proc.stderr,))
         t_so.daemon = True
